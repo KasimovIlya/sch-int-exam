@@ -34,7 +34,7 @@ class Computer:
         self.article = article
         self.title = title
         self.price = price
-
+db = SQLHelper()
 url = "https://www.re-store.ru/apple-mac/"
 html_doc = requests.get(url).text
 soup = BeautifulSoup(html_doc, "lxml")
@@ -49,4 +49,9 @@ for item in info:
     print(articles.text)
     print(titles.text)
     print(prices.text)
+    computers.append(Computer(articles, titles, prices))
+    print(computers)
+for a in computers:
+    db.query("INSERT INTO Apple VALUES (0, '%s', '%s', '%s');") % (a.article, a.title, a.price)
+    db.save()
 
