@@ -1,8 +1,9 @@
+#importing everything we need
 import sqlite3
 import requests
 from bs4 import BeautifulSoup
-from firebase import firebase
-firebase_url = "https://exam-76a95.firebaseio.com/"
+
+#class for working with our SQL-DataBase
 class SQLHelper:
     name = 'Examination.db'
 
@@ -26,6 +27,7 @@ class SQLHelper:
     def __del__(self):
         self._db_connection.close()
 
+#class for saving information about products on https://www.re-store.ru/apple-mac/
 class Computer:
     article = ''
     title = ''
@@ -36,6 +38,7 @@ class Computer:
         self.title = title
         self.price = price
 
+#preparing for parsing
 db = SQLHelper()
 url = "https://www.re-store.ru/apple-mac/"
 html_doc = requests.get(url).text
@@ -43,17 +46,20 @@ soup = BeautifulSoup(html_doc, "lxml")
 info = soup.find("div", {"class" : "w-4-fifth last"}).findAll("div", {"class" : "product-item__main"})
 print(info)
 
+#in 'computers' we will save computer-class objects
 computers = []
+
+#parse!
 for item in info:
+    #taking out everything we need
     articles = item.find("p", {"class": "product-item__article"})
     titles = item.find("p", {"class" : "product-item__title"})
     prices = item.find("span", {"class" : "product-item__price"}).find("span", {"class" : "product-item__price__num"})
-    print(articles.text)
-    print(titles.text)
-    print(prices.text)
-    computers.append(Computer(articles.text, titles.text, prices.text))
-    print(computers)
 
+    #append parsed information to 'computers' by computer-class object
+    computers.append(Computer(articles.text, titles.text, prices.text))
+
+#putting information in SQL-Database
 for a in computers:
     try:
         db.query(("INSERT INTO Apple(article, title, price) VALUES ('%s', '%s', '%s');") % (a.article, a.title, a.price))
