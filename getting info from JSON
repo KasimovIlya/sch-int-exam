@@ -1,0 +1,10 @@
+if "response" in dic:
+    people = dic["response"]
+    if "users" in people:
+        people_list = people["users"]
+
+        for user in people_list:
+            if "sex" in user and "first_name" in user and "last_name" in user:
+                sex = user["sex"]
+                l_name = user["last_name"]
+                f_name = user["first_name"]
