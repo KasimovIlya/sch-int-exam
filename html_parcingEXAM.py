@@ -1,7 +1,8 @@
 import sqlite3
 import requests
 from bs4 import BeautifulSoup
-
+from firebase import firebase
+firebase_url = "https://exam-76a95.firebaseio.com/"
 class SQLHelper:
     name = 'Examination.db'
 
@@ -34,6 +35,7 @@ class Computer:
         self.article = article
         self.title = title
         self.price = price
+
 db = SQLHelper()
 url = "https://www.re-store.ru/apple-mac/"
 html_doc = requests.get(url).text
@@ -49,9 +51,12 @@ for item in info:
     print(articles.text)
     print(titles.text)
     print(prices.text)
-    computers.append(Computer(articles, titles, prices))
+    computers.append(Computer(articles.text, titles.text, prices.text))
     print(computers)
-for a in computers:
-    db.query("INSERT INTO Apple VALUES (0, '%s', '%s', '%s');") % (a.article, a.title, a.price)
-    db.save()
 
+for a in computers:
+    try:
+        db.query(("INSERT INTO Apple(article, title, price) VALUES ('%s', '%s', '%s');") % (a.article, a.title, a.price))
+        db.save()
+    except TypeError:
+        pass
